@@ -2,8 +2,9 @@ CREATE TABLE School (
     school_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     city VARCHAR(50) NOT NULL,
-    country VARCHAR(50) NOT NULL,
+    country VARCHAR(50) NOT NULL
 );
+ 
 CREATE TABLE Participant (
     participant_id INT PRIMARY KEY AUTO_INCREMENT,
     school_id INT,
@@ -13,8 +14,8 @@ CREATE TABLE Participant (
     gender CHAR(1),
     grade_level INT,
     consent_date DATE NOT NULL,
-    FOREIGN KEY (school_id) REFERENCES School(school_id) ON DELETE
-    SET NULL
+    FOREIGN KEY (school_id) REFERENCES School(school_id) ON DELETE SET NULL,
+    CHECK (grade_level BETWEEN 1 AND 12)
 );
 CREATE TABLE Contact_Info (
     contact_id INT,
@@ -48,7 +49,7 @@ CREATE TABLE Platform (
     platform_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(50) NOT NULL,
     company_name VARCHAR(50) NOT NULL,
-    minimum_age INT NOT NULL,
+    minimum_age INT NOT NULL
 );
 CREATE TABLE Usage_Log (
     participant_id INT,
