@@ -6,7 +6,7 @@
 - Tiago Cornieles Pais
 
 ## Project description
-
+This project tracks student wellbeing data and digital platform usage to monitor mental health, daily habits, and online activity patterns across schools and participants.
 
 ## Database
 This project uses MySQL.
