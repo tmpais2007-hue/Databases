@@ -10,6 +10,7 @@ GROUP BY s.school_id, s.name
 HAVING AVG(u.active_minutes + u.passive_minutes) > 78
 ORDER BY avg_screen_minutes DESC;
 
+
 -- 2. Subquery
 -- Participants whose anxiety score is above the overall average
 SELECT p.first_name, p.last_name, a.assessed_on, a.anxiety_score,
@@ -18,6 +19,7 @@ FROM Participant p
 JOIN Assessment a ON a.participant_id = p.participant_id
 WHERE a.anxiety_score > (SELECT AVG(anxiety_score) FROM Assessment)
 ORDER BY a.anxiety_score DESC;
+
 
 -- 3. Window function
 -- Platforms ranked by average incident severity (platforms without incidents rank last)
@@ -30,37 +32,6 @@ LEFT JOIN Incident i ON i.platform_id = pl.platform_id
 GROUP BY pl.platform_id, pl.name
 ORDER BY severity_rank, platform;
 
--- 4. View combining wellbeing and usage per participant
-CREATE OR REPLACE VIEW Participant_Overview AS
-SELECT p.participant_id,
-       CONCAT(p.first_name, ' ', p.last_name) AS participant,
-       s.name AS school,
-       d.avg_sleep_hours,
-       d.avg_mood,
-       u.total_screen_minutes,
-       i.incident_count
-FROM Participant p
-LEFT JOIN School s ON s.school_id = p.school_id
-LEFT JOIN (
-    SELECT participant_id,
-           ROUND(AVG(sleep_hours), 1) AS avg_sleep_hours,
-           ROUND(AVG(mood_rating), 1) AS avg_mood
-    FROM Daily_Log
-    GROUP BY participant_id
-) d ON d.participant_id = p.participant_id
-LEFT JOIN (
-    SELECT participant_id,
-           SUM(active_minutes + passive_minutes) AS total_screen_minutes
-    FROM Usage_Log
-    GROUP BY participant_id
-) u ON u.participant_id = p.participant_id
-LEFT JOIN (
-    SELECT participant_id, COUNT(*) AS incident_count
-    FROM Incident
-    GROUP BY participant_id
-) i ON i.participant_id = p.participant_id;
-
-SELECT * FROM Participant_Overview ORDER BY total_screen_minutes DESC;
 
 -- 5. CTE with CASE
 -- Average mood and sleep grouped by how much screen time participants have per day
