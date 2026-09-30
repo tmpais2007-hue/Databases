@@ -24,8 +24,8 @@ INSERT INTO Assessment (participant_id, assessor_id, assessed_on, anxiety_score,
 VALUES (1, 999, '2024-10-10', 50, 45, 60, 'Bad Intervention');
 
 -- Usage_Log table: invalid foreign key on platform_id
-INSERT INTO Usage_Log (participant_id, platform_id, log_date, active_minutes, passive_minutes)
-VALUES (1, 999, '2024-10-11', 30, 10);
+INSERT INTO Usage_Log (participant_id, platform_id, log_date, screen_minutes, passive_minutes)
+VALUES (1, 999, '2024-10-11', 40, 10);
 
 -- Daily_Log table: invalid foreign key on participant_id
 INSERT INTO Daily_Log (participant_id, log_date, sleep_hours, physical_activity_min, mood_rating)
