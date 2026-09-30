@@ -37,15 +37,15 @@ INSERT INTO Platform (name, company_name, minimum_age) VALUES
 ('Instagram', 'Meta', 13),
 ('Minecraft', 'Microsoft', 10);
 
-INSERT INTO Usage_Log (participant_id, platform_id, log_date, active_minutes, passive_minutes) VALUES
-(1, 1, '2024-10-01', 45, 30),
-(1, 2, '2024-10-01', 20, 60),
-(2, 3, '2024-10-02', 35, 25),
-(3, 4, '2024-10-03', 50, 40),
-(4, 5, '2024-10-04', 65, 20),
-(5, 1, '2024-10-05', 30, 50),
-(2, 1, '2024-10-06', 55, 35),
-(3, 3, '2024-10-06', 40, 45);
+INSERT INTO Usage_Log (participant_id, platform_id, log_date, screen_minutes, passive_minutes) VALUES
+(1, 1, '2024-10-01', 75, 30),
+(1, 2, '2024-10-01', 80, 60),
+(2, 3, '2024-10-02', 60, 25),
+(3, 4, '2024-10-03', 90, 40),
+(4, 5, '2024-10-04', 85, 20),
+(5, 1, '2024-10-05', 80, 50),
+(2, 1, '2024-10-06', 90, 35),
+(3, 3, '2024-10-06', 85, 45);
 
 INSERT INTO Daily_Log (participant_id, log_date, sleep_hours, physical_activity_min, mood_rating) VALUES
 (1, '2024-10-01', 7.5, 30, 4),

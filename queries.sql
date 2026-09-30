@@ -1,21 +1,33 @@
+-- Week 5: queries adapted to the real-world data (see docs/week5_real_data.md
+-- for the week 3 versions, their output on the real data and why they changed).
+
 -- 1. Multi-table JOIN with GROUP BY and HAVING
--- Average daily screen time per school, only for schools averaging over 78 minutes
-SELECT s.name AS school,
+-- Average daily screen time per cohort and platform, only where it is over one hour.
+-- Cohort = the school, or the data source when the school is unknown.
+SELECT COALESCE(s.name, ds.short_name) AS cohort,
+    pl.name AS platform,
     COUNT(DISTINCT p.participant_id) AS participants,
-    ROUND(AVG(u.active_minutes + u.passive_minutes), 1) AS avg_screen_minutes
-FROM School s
-    JOIN Participant p ON p.school_id = s.school_id
-    JOIN Usage_Log u ON u.participant_id = p.participant_id
-GROUP BY s.school_id,
-    s.name
-HAVING AVG(u.active_minutes + u.passive_minutes) > 78
-ORDER BY avg_screen_minutes DESC;
+    COUNT(*) AS logged_days,
+    ROUND(AVG(u.screen_minutes), 1) AS avg_daily_minutes
+FROM Usage_Log u
+    JOIN Participant p ON p.participant_id = u.participant_id
+    JOIN Platform pl ON pl.platform_id = u.platform_id
+    LEFT JOIN School s ON s.school_id = p.school_id
+    LEFT JOIN Data_Source ds ON ds.source_id = p.source_id
+GROUP BY cohort,
+    pl.name
+HAVING AVG(u.screen_minutes) > 60
+ORDER BY cohort,
+    avg_daily_minutes DESC;
 -- 2. Subquery
 -- Participants whose anxiety score is above the overall average
-SELECT p.first_name,
-    p.last_name,
-    a.assessed_on,
+-- (anonymised participants are shown by id instead of name)
+SELECT COALESCE(CONCAT(p.first_name, ' ', p.last_name), CONCAT('#', p.participant_id)) AS participant,
+    p.gender,
+    p.age,
     a.anxiety_score,
+    a.self_esteem_score,
+    a.addiction_score,
     (
         SELECT ROUND(AVG(anxiety_score), 1)
         FROM Assessment
@@ -28,37 +40,45 @@ WHERE a.anxiety_score > (
     )
 ORDER BY a.anxiety_score DESC;
 -- 3. Window function
--- Platforms ranked by average incident severity (platforms without incidents rank last)
+-- Platforms ranked by the average anxiety score of the participants who use them
 SELECT pl.name AS platform,
-    COUNT(i.incident_id) AS incidents,
-    ROUND(AVG(i.severity), 2) AS avg_severity,
+    COUNT(*) AS users,
+    ROUND(AVG(a.anxiety_score), 1) AS avg_anxiety,
+    ROUND(AVG(a.self_esteem_score), 1) AS avg_self_esteem,
+    ROUND(AVG(a.addiction_score), 1) AS avg_addiction,
     DENSE_RANK() OVER (
-        ORDER BY AVG(i.severity) DESC
-    ) AS severity_rank
+        ORDER BY AVG(a.anxiety_score) DESC
+    ) AS anxiety_rank
 FROM Platform pl
-    LEFT JOIN Incident i ON i.platform_id = pl.platform_id
+    JOIN Platform_Use pu ON pu.platform_id = pl.platform_id
+    JOIN Assessment a ON a.participant_id = pu.participant_id
 GROUP BY pl.platform_id,
     pl.name
-ORDER BY severity_rank,
+ORDER BY anxiety_rank,
     platform;
 -- 4. CTE with CASE
--- Average mood and sleep grouped by how much screen time participants have per day
+-- Average sleep grouped by how much participants used their phone that day.
+-- Uses the 'All smartphone apps' total: the app categories overlap, so
+-- adding them up would count some minutes twice.
 WITH Daily_Screen AS (
-    SELECT participant_id,
-        log_date,
-        SUM(active_minutes + passive_minutes) AS screen_minutes
-    FROM Usage_Log
-    GROUP BY participant_id,
-        log_date
+    SELECT u.participant_id,
+        u.log_date,
+        u.screen_minutes,
+        u.bedtime_minutes
+    FROM Usage_Log u
+        JOIN Platform pl ON pl.platform_id = u.platform_id
+    WHERE pl.name = 'All smartphone apps'
 )
 SELECT CASE
-        WHEN ds.screen_minutes >= 90 THEN 'High (90+ min)'
-        WHEN ds.screen_minutes >= 75 THEN 'Medium (75-89 min)'
-        ELSE 'Low (< 75 min)'
+        WHEN ds.screen_minutes >= 540 THEN 'Very high (9+ h)'
+        WHEN ds.screen_minutes >= 360 THEN 'High (6-9 h)'
+        WHEN ds.screen_minutes >= 180 THEN 'Medium (3-6 h)'
+        ELSE 'Low (< 3 h)'
     END AS usage_level,
     COUNT(*) AS logged_days,
-    ROUND(AVG(dl.mood_rating), 2) AS avg_mood,
-    ROUND(AVG(dl.sleep_hours), 2) AS avg_sleep_hours
+    ROUND(AVG(ds.bedtime_minutes), 1) AS avg_bedtime_minutes,
+    ROUND(AVG(dl.sleep_hours), 2) AS avg_sleep_hours,
+    ROUND(AVG(dl.sleep_quality), 2) AS avg_sleep_quality
 FROM Daily_Screen ds
     JOIN Daily_Log dl ON dl.participant_id = ds.participant_id
     AND dl.log_date = ds.log_date
