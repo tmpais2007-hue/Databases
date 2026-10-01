@@ -43,9 +43,7 @@ def parse_utc(text):
     return dt.datetime.fromisoformat(text.replace("Z", "+00:00"))
 
 
-# ---------------------------------------------------------------------------
 # Dataset A: Siebers et al. (2024), smartphone use and sleep (Netherlands)
-# ---------------------------------------------------------------------------
 def load_siebers():
     folder = RAW / "siebers2024"
     # The categories overlap (one app can be in two of them), so the daily
@@ -130,9 +128,7 @@ def load_siebers():
     return out
 
 
-# ---------------------------------------------------------------------------
 # Dataset B: Scafuto & Ciacchini (2023), social media addiction (Italy)
-# ---------------------------------------------------------------------------
 NS = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
 
 
