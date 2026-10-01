@@ -41,6 +41,28 @@ The normalization diagram is included here: [Normalization.jpg](Normalization.jp
 - queries.sql - Advanced SQL queries
 - docs/week5_real_data.md - Week 5: data sources, cleaning steps, schema changes, query results and normalization check
 
+## Real-world data sources
+
+This project includes two real datasets used to populate the database.
+
+### Dataset A: Siebers et al. (2024)
+- Source: University of Amsterdam / Amsterdam University of Applied Sciences (Figshare)
+- Title: "Dataset belonging to Siebers et al. (2024) Adolescents' digital nightlife: The comparative effects of day- and nighttime smartphone use on sleep quality"
+- Publication date: 2024-07-29
+- License: CC BY 4.0
+- DOI: 10.21942/uva.26395903.v2
+- Country: Netherlands
+
+### Dataset B: Scafuto & Ciacchini (2023)
+- Source: Mendeley Data (Universita degli Studi di Pisa)
+- Title: "Social Media Addiction dataset (version 2)"
+- Publication date: 2023-01-30
+- License: CC BY 4.0
+- DOI: 10.17632/vftw9cz723.2
+- Country: Italy
+
+Both datasets are openly licensed under the Creative Commons Attribution 4.0 International License.
+
 ## How to run
 
 1. Install MySQL
