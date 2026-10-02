@@ -63,10 +63,7 @@ This project includes two real datasets used to populate the database.
 
 Both datasets are openly licensed under the Creative Commons Attribution 4.0 International License.
 
-## How to run
-
-
-## Data cleaning 
+## Data cleaning for real data
 
 **1. How is missing data reported?**
 - Dataset A: `-999` fills whole rows. Nights without a survey are just absent. These rows are skipped.
@@ -84,7 +81,7 @@ Both datasets are openly licensed under the Creative Commons Attribution 4.0 Int
 - Dataset A: `game.csv` has its columns in a different order. Category files renamed to descriptive platform names.
 - Dataset B: header typos and trailing spaces. Version 1 and version 2 use different column names. `Whatsapp` → `WhatsApp`, `Twitter` → `X (Twitter)`, sex `1`/`2` → `M`/`F`.
 
-
+## How to run
 
 1. Install MySQL
 2. Create a database
