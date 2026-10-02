@@ -65,6 +65,27 @@ Both datasets are openly licensed under the Creative Commons Attribution 4.0 Int
 
 ## How to run
 
+
+## Data cleaning 
+
+**1. How is missing data reported?**
+- Dataset A: `-999` fills whole rows. Nights without a survey are just absent. These rows are skipped.
+- Dataset B: no missing-value code, 0 empty cells. Survey date, participant id and school were not collected, so they are stored as `NULL`.
+
+**2. How are dates formatted?**
+- Dataset A: ISO dates (`2020-06-02`) and UTC timestamps (`2020-06-01T23:30:00Z`). Usage files only have `study_day` 1-21, converted to real dates (day 1 = 2020-06-01). Dutch weekday names dropped. Durations in decimal hours converted to minutes.
+- Dataset B: no dates. Age in whole years goes into the `age` column. Daily social media time is a code 0-5, stored as an hour range.
+
+**3. Are there duplicate records?**
+- Dataset A: none.
+- Dataset B: 37 exact duplicate rows removed.
+
+**4. Are there inconsistent naming conventions?**
+- Dataset A: `game.csv` has its columns in a different order. Category files renamed to descriptive platform names.
+- Dataset B: header typos and trailing spaces. Version 1 and version 2 use different column names. `Whatsapp` → `WhatsApp`, `Twitter` → `X (Twitter)`, sex `1`/`2` → `M`/`F`.
+
+
+
 1. Install MySQL
 2. Create a database
 3. Run schema.sql
