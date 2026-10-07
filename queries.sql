@@ -118,3 +118,50 @@ FROM Usage_Log u
 WHERE pl.name = 'All smartphone apps'
     AND u.bedtime_minutes >= 30
 ORDER BY u.log_date, u.participant_id;
+
+-- 7. Social media time and addiction risk
+-- Author: Peter Leshkov
+-- Do people who spend more time on social media score higher on addiction
+-- and anxiety, and lower on self-esteem? At risk = addiction score 19+.
+SELECT CONCAT(a.daily_sm_hours_min, COALESCE(CONCAT('-', a.daily_sm_hours_max), '+'), ' h') AS daily_social_media,
+    COUNT(*) AS participants,
+    ROUND(AVG(a.addiction_score), 1) AS avg_addiction,
+    ROUND(100 * AVG(a.addiction_score >= 19), 1) AS pct_at_risk,
+    ROUND(AVG(a.anxiety_score), 1) AS avg_anxiety,
+    ROUND(AVG(a.self_esteem_score), 1) AS avg_self_esteem
+FROM Assessment a
+    JOIN Participant p ON p.participant_id = a.participant_id
+    JOIN Data_Source ds ON ds.source_id = p.source_id
+WHERE ds.short_name = 'Scafuto2023'
+GROUP BY a.daily_sm_hours_min,
+    a.daily_sm_hours_max
+ORDER BY a.daily_sm_hours_min;
+
+-- 8. Bedtime use compared to the participant's own habit
+-- Author: Peter Leshkov
+-- Do participants sleep worse on nights when they use their phone around
+-- bedtime more than they usually do?
+WITH Night AS (
+    SELECT u.participant_id,
+        u.bedtime_minutes,
+        dl.sleep_hours,
+        dl.sleep_quality,
+        AVG(u.bedtime_minutes) OVER (PARTITION BY u.participant_id) AS own_avg_bedtime
+    FROM Usage_Log u
+        JOIN Platform pl ON pl.platform_id = u.platform_id
+        JOIN Daily_Log dl ON dl.participant_id = u.participant_id
+            AND dl.log_date = u.log_date
+    WHERE pl.name = 'All smartphone apps'
+)
+SELECT CASE
+        WHEN bedtime_minutes > own_avg_bedtime THEN 'More than usual'
+        ELSE 'Usual or less'
+    END AS bedtime_use,
+    COUNT(*) AS nights,
+    COUNT(DISTINCT participant_id) AS participants,
+    ROUND(AVG(bedtime_minutes), 1) AS avg_bedtime_minutes,
+    ROUND(AVG(sleep_hours), 2) AS avg_sleep_hours,
+    ROUND(AVG(sleep_quality), 2) AS avg_sleep_quality
+FROM Night
+GROUP BY bedtime_use
+ORDER BY bedtime_use;

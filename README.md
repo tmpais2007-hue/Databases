@@ -38,8 +38,9 @@ The normalization diagram is included here: [Normalization.jpg](Normalization.jp
 - data/import_real_data.py - Cleans the raw data and generates data/real_data.sql
 - data/real_data.sql - Inserts the real-world data
 - crud.sql - Basic INSERT, SELECT, UPDATE and DELETE operations
-- queries.sql - Advanced SQL queries, including two authored by Tom Piedboeuf, two by Peter Leshkov qnd two by Tiago Cornieles Pais
+- queries.sql - Advanced SQL queries, including two authored by Tom Piedboeuf, two by Peter Leshkov, and two by Tiago Cornieles Pais
 - docs/query_documentation.md - Questions answered, societal relevance, and interpretation of everyone's two queries
+- docs/week5_real_data.md - Schema changes for the real data, what broke in the old queries, reflection and future work
 
 ## Real-world data sources
 
@@ -80,6 +81,15 @@ Both datasets are openly licensed under the Creative Commons Attribution 4.0 Int
 **4. Are there inconsistent naming conventions?**
 - Dataset A: `game.csv` has its columns in a different order. Category files renamed to descriptive platform names.
 - Dataset B: header typos and trailing spaces. Version 1 and version 2 use different column names. `Whatsapp` → `WhatsApp`, `Twitter` → `X (Twitter)`, sex `1`/`2` → `M`/`F`.
+
+## Reflection on the real data
+
+Loading the real data showed several limits of our design: open datasets are
+anonymised (no names, schools or exact survey dates), the same score column held
+different scales in the mock and real data, `sleep_hours` in dataset A is really
+time in bed, and the two datasets cover different people, so they cannot be
+linked. The full reflection and future work are in
+[docs/week5_real_data.md](docs/week5_real_data.md).
 
 ## How to run
 
