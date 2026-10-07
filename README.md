@@ -38,8 +38,8 @@ The normalization diagram is included here: [Normalization.jpg](Normalization.jp
 - data/import_real_data.py - Cleans the raw data and generates data/real_data.sql
 - data/real_data.sql - Inserts the real-world data
 - crud.sql - Basic INSERT, SELECT, UPDATE and DELETE operations
-- queries.sql - Advanced SQL queries
-- docs/week5_real_data.md - Week 5: data sources, cleaning steps, schema changes, query results and normalization check
+- queries.sql - Advanced SQL queries, including two authored by Tom Piedboeuf, two by Peter Leshkov qnd two by Tiago Cornieles Pais
+- docs/query_documentation.md - Questions answered, societal relevance, and interpretation of everyone's two queries
 
 ## Real-world data sources
 

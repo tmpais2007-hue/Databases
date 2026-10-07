@@ -84,3 +84,37 @@ FROM Daily_Screen ds
     AND dl.log_date = ds.log_date
 GROUP BY usage_level
 ORDER BY MIN(ds.screen_minutes) DESC;
+
+-- 5. Screen time and sleep
+-- Author: Tom Piedboeuf
+-- Which days had at least six hours of total smartphone use, and how much did
+-- the participant sleep that night? The all-apps category avoids double-counting.
+SELECT u.participant_id,
+    u.log_date,
+    u.screen_minutes,
+    dl.sleep_hours,
+    dl.sleep_quality
+FROM Usage_Log u
+    JOIN Platform pl ON pl.platform_id = u.platform_id
+    JOIN Daily_Log dl ON dl.participant_id = u.participant_id
+        AND dl.log_date = u.log_date
+WHERE pl.name = 'All smartphone apps'
+    AND u.screen_minutes >= 360
+ORDER BY u.log_date, u.participant_id;
+
+-- 6. Bedtime screen use and sleep
+-- Author: Tom Piedboeuf
+-- Which days had at least 30 minutes of smartphone use around bedtime, and
+-- how much did the participant sleep that night?
+SELECT u.participant_id,
+    u.log_date,
+    u.bedtime_minutes,
+    dl.sleep_hours,
+    dl.sleep_quality
+FROM Usage_Log u
+    JOIN Platform pl ON pl.platform_id = u.platform_id
+    JOIN Daily_Log dl ON dl.participant_id = u.participant_id
+        AND dl.log_date = u.log_date
+WHERE pl.name = 'All smartphone apps'
+    AND u.bedtime_minutes >= 30
+ORDER BY u.log_date, u.participant_id;
