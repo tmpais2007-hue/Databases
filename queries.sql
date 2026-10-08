@@ -165,3 +165,56 @@ SELECT CASE
 FROM Night
 GROUP BY bedtime_use
 ORDER BY bedtime_use;
+
+
+-- 9. Number of platforms and addiction risk
+-- Author: Tiago Cornieles Pais
+-- Do young people who use more different social media platforms score higher
+-- on social media addiction? Average daily hours are shown next to it, because
+-- people on more platforms might simply spend more time online.
+WITH Platform_Count AS (
+    SELECT p.participant_id,
+        COUNT(pu.platform_id) AS platforms_used
+    FROM Participant p
+        JOIN Data_Source ds ON ds.source_id = p.source_id
+        LEFT JOIN Platform_Use pu ON pu.participant_id = p.participant_id
+    WHERE ds.short_name = 'Scafuto2023'
+    GROUP BY p.participant_id
+)
+SELECT CASE
+        WHEN pc.platforms_used <= 1 THEN '0-1 platforms'
+        WHEN pc.platforms_used >= 4 THEN '4+ platforms'
+        ELSE CONCAT(pc.platforms_used, ' platforms')
+    END AS platforms,
+    COUNT(*) AS participants,
+    ROUND(AVG(a.addiction_score), 1) AS avg_addiction,
+    ROUND(100 * AVG(a.addiction_score >= 19), 1) AS pct_at_risk,
+    ROUND(AVG(a.self_esteem_score), 1) AS avg_self_esteem,
+    ROUND(AVG(a.daily_sm_hours_min), 1) AS avg_daily_sm_hours_min
+FROM Platform_Count pc
+    JOIN Assessment a ON a.participant_id = pc.participant_id
+GROUP BY platforms
+ORDER BY MIN(pc.platforms_used);
+
+-- 10. School nights and weekend nights
+-- Author: Tiago Cornieles Pais
+-- Do participants use their phone more, and spend less time in bed, on school
+-- nights than on weekend nights? Friday and Saturday count as weekend nights,
+-- because there is no school the next morning.
+SELECT CASE
+        WHEN DAYOFWEEK(dl.log_date) IN (6, 7) THEN 'Weekend night (Fri-Sat)'
+        ELSE 'School night (Sun-Thu)'
+    END AS night_type,
+    COUNT(*) AS nights,
+    COUNT(DISTINCT dl.participant_id) AS participants,
+    ROUND(AVG(u.screen_minutes) / 60, 1) AS avg_phone_hours,
+    ROUND(AVG(u.bedtime_minutes), 1) AS avg_bedtime_minutes,
+    ROUND(AVG(dl.sleep_hours), 2) AS avg_time_in_bed,
+    ROUND(AVG(dl.sleep_quality), 2) AS avg_sleep_quality
+FROM Daily_Log dl
+    JOIN Usage_Log u ON u.participant_id = dl.participant_id
+        AND u.log_date = dl.log_date
+    JOIN Platform pl ON pl.platform_id = u.platform_id
+WHERE pl.name = 'All smartphone apps'
+GROUP BY night_type
+ORDER BY night_type;
