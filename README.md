@@ -181,7 +181,7 @@ All changes are marked `-- W5:` in `schema.sql`.
 
 ## Published dataset
 
-A MySQL dump of the database (schema + real data only) is published on Zenodo: **DOI: TODO (add after publishing)**
+A MySQL dump of the database (schema + real data only) is published on Zenodo: **DOI: [10.5281/zenodo.23262562](https://doi.org/10.5281/zenodo.23262562)**
 
 - **No personal data:** the dump contains only the two anonymised open datasets. Participants have no names,
   birth dates, contact details or schools, only a study id, age, gender and their answers. The mock data
