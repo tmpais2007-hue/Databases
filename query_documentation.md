@@ -98,3 +98,4 @@ quality are almost the same. So the difference is mostly how long they stay in
 bed, not what they do just before sleeping. As in query 8, `sleep_hours` is time
 in bed, not real sleep. The data is from June 2020, during the COVID-19 period,
 so school routines may not have been normal.
+
