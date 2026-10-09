@@ -1,0 +1,18 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+
+The data in this repository (data/real_data.sql) and the MySQL dump published
+on Zenodo are licensed under CC BY 4.0. You may share and adapt them for any
+purpose, as long as you give appropriate credit, link to the licence and
+indicate if changes were made.
+
+When reusing the data, credit this project and the original datasets:
+
+- Siebers, T., Beyens, I., Baumgartner, S. E., & Valkenburg, P. M. (2024).
+  Dataset belonging to Siebers et al. (2024) Adolescents' digital nightlife.
+  University of Amsterdam. https://doi.org/10.21942/uva.26395903.v2 (CC BY 4.0)
+
+- Scafuto, F., & Ciacchini, R. (2023). Social Media Addiction dataset
+  (version 2). Mendeley Data. https://doi.org/10.17632/vftw9cz723.2 (CC BY 4.0)
+
+The original files in data/raw/ remain under their own CC BY 4.0 licences.

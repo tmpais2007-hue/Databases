@@ -1,5 +1,7 @@
--- Week 5: queries adapted to the real-world data (see docs/week5_real_data.md
--- for the week 3 versions, their output on the real data and why they changed).
+-- Queries 1-4: week 3 group queries, written by Peter Leshkov and edited by
+-- Tom Piedboeuf, adapted to the real data in week 5 by Peter Leshkov
+-- (see README.md, "What broke in the week 3 queries").
+-- Queries 5-10: two per group member, documented in query_documentation.md.
 
 -- 1. Multi-table JOIN with GROUP BY and HAVING
 -- Average daily screen time per cohort and platform, only where it is over one hour.
@@ -20,23 +22,29 @@ HAVING AVG(u.screen_minutes) > 60
 ORDER BY cohort,
     avg_daily_minutes DESC;
 -- 2. Subquery
--- Participants whose anxiety score is above the overall average
--- (anonymised participants are shown by id instead of name)
-SELECT COALESCE(CONCAT(p.first_name, ' ', p.last_name), CONCAT('#', p.participant_id)) AS participant,
+-- Participants whose anxiety score is above the overall average.
+-- Only dataset B is used: the mock data uses a different anxiety scale.
+SELECT p.participant_id,
     p.gender,
     p.age,
     a.anxiety_score,
     a.self_esteem_score,
     a.addiction_score,
     (
-        SELECT ROUND(AVG(anxiety_score), 1)
-        FROM Assessment
-    ) AS overall_avg
+        SELECT ROUND(AVG(a2.anxiety_score), 1)
+        FROM Assessment a2
+            JOIN Participant p2 ON p2.participant_id = a2.participant_id
+        WHERE p2.source_id = p.source_id
+    ) AS dataset_avg
 FROM Participant p
     JOIN Assessment a ON a.participant_id = p.participant_id
-WHERE a.anxiety_score > (
-        SELECT AVG(anxiety_score)
-        FROM Assessment
+    JOIN Data_Source ds ON ds.source_id = p.source_id
+WHERE ds.short_name = 'Scafuto2023'
+    AND a.anxiety_score > (
+        SELECT AVG(a2.anxiety_score)
+        FROM Assessment a2
+            JOIN Participant p2 ON p2.participant_id = a2.participant_id
+        WHERE p2.source_id = p.source_id
     )
 ORDER BY a.anxiety_score DESC;
 -- 3. Window function

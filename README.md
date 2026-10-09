@@ -1,4 +1,4 @@
-# Practical Assignment 2
+# Student Wellbeing and Digital Habits Database
 
 Repository: https://github.com/tmpais2007-hue/Databases
 
@@ -7,8 +7,28 @@ Repository: https://github.com/tmpais2007-hue/Databases
 - Tom Piedboeuf
 - Tiago Cornieles Pais
 
-## Project description
-This project tracks student wellbeing data and digital platform usage to monitor mental health, daily habits, and online activity patterns across schools and participants.
+## Societal problem statement
+
+Teenagers spend many hours a day on their smartphones and on social media.
+Parents, schools and health organisations worry that this harms their sleep and
+mental wellbeing, for example through social media addiction, anxiety and low
+self-esteem. Advice such as screen-time limits or "no phone in bed" is common,
+but it is hard to check against real data, because screen time, sleep and
+wellbeing are usually measured in separate studies.
+
+This database brings these measurements together in one structure: participants,
+their daily phone and platform use, their sleep, and their wellbeing scores, with
+every real record linked to its original open dataset. The queries use it to
+ask, for example:
+
+- Do young people who spend more time on social media score higher on addiction
+  and anxiety? (queries 7 and 9)
+- Do they sleep worse after heavy phone use, or after phone use around bedtime?
+  (queries 4, 5, 6 and 8)
+- Is phone use and sleep different on school nights? (query 10)
+
+The answers can help schools and families decide where prevention and advice
+are most needed. The data shows patterns, not causes.
 
 ## Database
 This project uses MySQL (tested on 8.4).
@@ -30,17 +50,54 @@ This database follows standard normalization principles to reduce redundancy and
 
 The normalization diagram is included here: [Normalization.jpg](Normalization.jpg)
 
+### Why the real-data schema is normalized through 3NF
+
+- **1NF:** Each field stores a single value; platform use and dated usage are
+  recorded as separate rows rather than packed into participant records.
+- **2NF:** In tables with composite keys, such as `Usage_Log` and `Daily_Log`,
+  each measurement depends on the complete key (participant, platform and date,
+  or participant and date), not just part of it.
+- **3NF:** Descriptive details are kept with their entities, such as school
+  details in `School`, platform details in `Platform`, and source details in
+  `Data_Source`. Other tables refer to them by keys instead of repeating those
+  details, avoiding transitive dependencies.
+
 ## Repository structure
 
 - schema.sql - Creates the database tables and constraints
-- data.sql - Inserts mock data
+- data.sql - Inserts mock data (fictional people, for testing only)
+- bad_data.sql - Invalid rows that the constraints must reject (every statement should fail)
 - data/raw/ - Real-world datasets (original files, CC BY 4.0)
 - data/import_real_data.py - Cleans the raw data and generates data/real_data.sql
 - data/real_data.sql - Inserts the real-world data
 - crud.sql - Basic INSERT, SELECT, UPDATE and DELETE operations
-- queries.sql - Advanced SQL queries, including two authored by Tom Piedboeuf, two by Peter Leshkov, and two by Tiago Cornieles Pais
-- docs/query_documentation.md - Questions answered, societal relevance, and interpretation of everyone's two queries
-- docs/week5_real_data.md - Schema changes for the real data, what broke in the old queries, reflection and future work
+- queries.sql - Advanced SQL queries (authors below)
+- query_documentation.md - Question answered, societal relevance and interpretation of queries 5-10
+- LICENSE - Licence of the data (CC BY 4.0)
+
+## How to run
+
+1. Install MySQL 8.4
+2. Create a database
+3. Run schema.sql
+4. Run data.sql (optional, mock data)
+5. Run data/real_data.sql (to rebuild it from the raw files: `python data/import_real_data.py`)
+6. Run crud.sql
+7. Run queries.sql
+8. Run bad_data.sql (optional: shows that the constraints reject invalid data, so each statement gives an error)
+
+Instead of steps 3-5, you can load the MySQL dump from Zenodo (see Published dataset).
+
+## Queries
+
+| Query | Topic | Author |
+|---|---|---|
+| 1-4 | Week 3 group queries, adapted to the real data | Peter Leshkov, Tom Piedboeuf |
+| 5, 6 | Heavy smartphone use / bedtime use and sleep | Tom Piedboeuf |
+| 7, 8 | Social media time and addiction risk / bedtime use compared to own habit | Peter Leshkov |
+| 9, 10 | Number of platforms and addiction / school nights vs weekend nights | Tiago Cornieles Pais |
+
+Queries 5-10 are explained in [query_documentation.md](query_documentation.md).
 
 ## Real-world data sources
 
@@ -82,25 +139,16 @@ Both datasets are openly licensed under the Creative Commons Attribution 4.0 Int
 - Dataset A: `game.csv` has its columns in a different order. Category files renamed to descriptive platform names.
 - Dataset B: header typos and trailing spaces. Version 1 and version 2 use different column names. `Whatsapp` → `WhatsApp`, `Twitter` → `X (Twitter)`, sex `1`/`2` → `M`/`F`.
 
-## Reflection on the real data
+## Real data: changes and reflection
 
-Loading the real data showed several limits of our design: open datasets are
-anonymised (no names, schools or exact survey dates), the same score column held
-different scales in the mock and real data, `sleep_hours` in dataset A is really
-time in bed, and the two datasets cover different people, so they cannot be
-linked. The full reflection and future work are in
-[docs/week5_real_data.md](docs/week5_real_data.md).
-
-# Real data: changes and reflection
-
-## What we imported
+### What we imported
 
 `python data/import_real_data.py` turns the raw files in `data/raw/` into `data/real_data.sql`.
 
 - **Dataset A** (Siebers et al., 2024): 156 participants, 1,859 sleep rows, 6,185 usage rows. About half of the usage rows were `-999` (missing) and were skipped.
 - **Dataset B** (Scafuto & Ciacchini, 2023): 221 participants after removing 37 duplicate rows.
 
-## Schema changes
+### Schema changes
 
 All changes are marked `-- W5:` in `schema.sql`.
 
@@ -111,44 +159,32 @@ All changes are marked `-- W5:` in `schema.sql`.
 - New columns for addiction score, daily social media hours and sleep quality.
 - `CHECK` constraints catch impossible values such as `-999`.
 
-### Why the real-data schema is normalized through 3NF
-
-- **1NF:** Each field stores a single value; platform use and dated usage are
-  recorded as separate rows rather than packed into participant records.
-- **2NF:** In tables with composite keys, such as `Usage_Log` and `Daily_Log`,
-  each measurement depends on the complete key (participant, platform and date,
-  or participant and date), not just part of it.
-- **3NF:** Descriptive details are kept with their entities, such as school
-  details in `School`, platform details in `Platform`, and source details in
-  `Data_Source`. Other tables refer to them by keys instead of repeating those
-  details, avoiding transitive dependencies.
-
-## What broke in the week 3 queries
+### What broke in the week 3 queries
 
 - Grouping by school returned nothing for real participants: they have no school.
 - Ranking platforms by incidents ignored the real data: it has no incidents.
 - Screen-time thresholds (75/90 min) were too low: the real average is 379 min/day. Adding up the app categories counted minutes twice (719 min/day).
 
-## Reflection
+### Reflection
 
 - **Mock data hid problems.** It was made to fit our schema. Real data has no names, schools or exact dates.
-- **Same column, different scales.** Mock anxiety scores are 0-100, real ones 20-80. Query 2 still mixes them, so its average means little. Queries 7 and 8 use one source only.
+- **Same column, different scales.** Mock anxiety scores are 0-100, real ones 20-80. Mixing them gives averages that mean nothing, so queries 2, 7 and 9 use dataset B only.
 - **`sleep_hours` is really time in bed**, so phone use in bed looks like more sleep (query 8).
 - **The datasets can't be linked.** They cover different people, so we can't study screen time, sleep and wellbeing for the same person. Our queries show patterns, not causes.
 
-## Future work
+### Future work
 
 - Keep mock and real data apart.
 - Store the scale (min/max) with each score.
 - Rename `sleep_hours` to `time_in_bed_hours`.
 - Find a dataset with schools that follows the same students over time.
 
-## How to run
+## Published dataset
 
-1. Install MySQL
-2. Create a database
-3. Run schema.sql
-4. Run data.sql (optional, mock data)
-5. Run data/real_data.sql (to rebuild it from the raw files: `python data/import_real_data.py`)
-6. Run crud.sql
-7. Run queries.sql
+A MySQL dump of the database (schema + real data only) is published on Zenodo: **DOI: TODO (add after publishing)**
+
+- **No personal data:** the dump contains only the two anonymised open datasets. Participants have no names,
+  birth dates, contact details or schools, only a study id, age, gender and their answers. The mock data
+  (fictional people in `data.sql`) is not included.
+- **Licence:** CC BY 4.0, the same licence as both source datasets. Anyone reusing it must credit
+  Siebers et al. (2024) and Scafuto & Ciacchini (2023), as listed above.

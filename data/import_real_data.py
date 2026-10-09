@@ -2,7 +2,7 @@
 
 Run from the repository root:  python data/import_real_data.py
 Only the Python standard library is used. The cleaning steps are explained
-in docs/week5_real_data.md; the counts printed at the end are quoted there.
+in README.md; the counts printed at the end are quoted there.
 """
 import collections
 import csv

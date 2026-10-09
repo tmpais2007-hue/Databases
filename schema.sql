@@ -1,6 +1,6 @@
 -- Week 5: schema updated after loading real-world data.
 -- Every change compared to the week 3 schema is marked with "-- W5:"
--- and explained in docs/week5_real_data.md.
+-- and explained in README.md (section "Real data: changes and reflection").
 
 -- W5: new table. Records where imported rows come from (source, date, license).
 CREATE TABLE Data_Source (
@@ -46,11 +46,10 @@ CREATE TABLE Participant (
         AND last_name IS NOT NULL AND consent_date IS NOT NULL))  -- still need these
 );
 CREATE TABLE Contact_Info (
-    contact_id INT,
+    contact_id INT PRIMARY KEY AUTO_INCREMENT,  -- contact_id alone is unique
     participant_id INT NOT NULL,
     contact_type VARCHAR(30) NOT NULL,
     contact_value VARCHAR(100) NOT NULL,
-    PRIMARY KEY (contact_id, participant_id),
     FOREIGN KEY (participant_id) REFERENCES Participant(participant_id) ON DELETE CASCADE
 );
 CREATE TABLE Assessor (
