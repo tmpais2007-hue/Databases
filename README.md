@@ -31,7 +31,7 @@ The answers can help schools and families decide where prevention and advice
 are most needed. The data shows patterns, not causes.
 
 ## Database
-This project uses MySQL (tested on 8.4).
+This project uses MySQL (tested on 8.4)
 
 ## Normalization
 This database follows standard normalization principles to reduce redundancy and improve data integrity.
